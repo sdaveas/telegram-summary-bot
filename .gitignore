@@ -2,3 +2,4 @@
 .vscode/launch.json
 Pipfile.lock
 database/*
+*.pyc
