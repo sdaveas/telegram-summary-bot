@@ -41,6 +41,7 @@ def store_message(message: Message):
 def help(message: Message):
     chat_id = message.chat.id
     bot.send_message(chat_id, "Usage: \n\
+    /summary (defaults to 10 minutes)\n\
     /summary <minutes>\n\
     /summary <hours> <minutes>\n\
     /summary <days> <hours> <minutes>\n\
@@ -63,8 +64,7 @@ def summarize(message: Message):
     days = 0
     
     if len(command_parts) == 1:
-        msg = "using default values: %d days, %d hours, %d mins" % (days, hours, mins)
-        bot.reply_to(message, msg)
+        print("No time specified, defaulting to 10 minutes")
     elif len(command_parts) == 2:
         mins = command_parts[1]
     elif len(command_parts) == 3:
