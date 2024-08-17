@@ -10,5 +10,5 @@ COPY . /app
 # Install any needed packages specified in requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Run bot.py when the container launches
-CMD ["python", "bot.py"]
+# Run app.py when the container launches
+CMD ["python", "src/app.py"]
