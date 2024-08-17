@@ -37,6 +37,12 @@ def store_message(message: Message):
     conn.commit()
     conn.close()
 
+@bot.message_handler(commands=['credits'])
+def credits(message: Message):
+    chat_id = message.chat.id
+    msg = "https://github.com/sdaveas/telegram-summary-bot with ❤️"
+    bot.send_message(chat_id, msg)
+
 @bot.message_handler(commands=['help'])
 def help(message: Message):
     chat_id = message.chat.id
