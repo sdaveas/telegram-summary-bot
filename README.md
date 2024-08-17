@@ -30,10 +30,11 @@ This Telegram bot is designed to store messages from chats and provide AI-powere
    pip install -r requirements.txt
    ```
 
-3. Create a `.env` file in the project root and add your API keys:
+3. Create an `.env` file in the project root and add your API keys:
    ```
    TELEGRAM_BOT_TOKEN=your_telegram_bot_token_here
    ANTHROPIC_API_KEY=your_anthropic_api_key_here
+   DATABASE_PATH=./database/messages.db
    ```
 
 ## Usage
@@ -49,7 +50,7 @@ python src/app.py
 ### Running with Docker Compose
 
 1. Ensure you have Docker and Docker Compose installed on your system.
-2. Create a `.env` file as described in the Installation section.
+2. Create an `.env` file as described in the Installation section.
 3. Run the following command to start the bot:
    ```
    docker-compose up -d
@@ -73,7 +74,7 @@ python src/app.py
 
 ## Database
 
-The bot uses a SQLite database (`messages.db`) to store messages. The database is automatically created when you first run the bot.
+The bot uses a SQLite database to store messages. The database is automatically created when you first run the bot in the path specified by the enviromnent variable `DATABASE_PATH` (e.g. `./database/messages.db`)
 
 ## Security Notes
 
