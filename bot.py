@@ -92,7 +92,7 @@ def summarize(message: Message):
     for msg in recent_messages:
         discussion += f"{msg[0]}: {msg[1]}\n"
 
-    summary = ask_ai(discussion)
+    summary = get_ai_summary(discussion)
 
     bot.reply_to(message, summary)
 
@@ -104,7 +104,7 @@ def get_recent_messages(chat_id, cutoff_time):
     conn.close()
     return messages
 
-summary_request = "can you summarize briefly this discussion for me? Answer in the language the messages were sent\n"
+summary_request = "can you summarize briefly this discussion for me? Answer in the language the messages were sent, and don't make any prologue\n"
 
 def get_generic_response(request):
     prompt = f"{HUMAN_PROMPT}" + request + f"{AI_PROMPT}"
