@@ -1,3 +1,4 @@
 .env
+.vscode/launch.json
 Pipfile.lock
 messages.db
