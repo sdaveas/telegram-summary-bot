@@ -4,8 +4,18 @@ from telebot.types import Message
 import sqlite3
 import datetime
 from collections import defaultdict
+from anthropic import Anthropic, HUMAN_PROMPT, AI_PROMPT
+from dotenv import load_dotenv
 
-bot = telebot.TeleBot(os.getenv('TG_BOT_TOKEN'))
+# Load environment variables from .env file
+load_dotenv()
+
+# Get API keys, prioritizing environment variables over .env file
+TELEGRAM_BOT_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN')
+ANTHROPIC_API_KEY = os.getenv('ANTHROPIC_API_KEY')
+
+bot = telebot.TeleBot(TELEGRAM_BOT_TOKEN)
+anthropic = Anthropic(api_key=ANTHROPIC_API_KEY)
 
 # Initialize database
 def init_db():
@@ -71,28 +81,50 @@ def summarize(message: Message):
         bot.reply_to(message, f"No messages in the last {days} days and {hours} hours.")
         return
 
-    # Simple summarization: count messages per user
-    user_message_counts = defaultdict(int)
+    discussion = ""
     for msg in recent_messages:
-        user = msg[3] or msg[4]  # username or first_name
-        user_message_counts[user] += 1
+        discussion += f"{msg[0]}: {msg[1]}\n"
 
-    # Create a summary
-    summary = f"Summary of the last {days} days and {hours} hours:\n\n"
-    summary += f"Total messages: {len(recent_messages)}\n"
-    summary += "Messages per user:\n"
-    for user, count in user_message_counts.items():
-        summary += f"- {user}: {count}\n"
+    summary = get_ai_summary(discussion)
 
     bot.reply_to(message, summary)
 
 def get_recent_messages(chat_id, cutoff_time):
     conn = sqlite3.connect('messages.db')
     c = conn.cursor()
-    c.execute("SELECT * FROM messages WHERE chat_id = ? AND date >= ? ORDER BY date DESC", (chat_id, cutoff_time))
+    c.execute("SELECT username, message_text FROM messages WHERE chat_id = ? AND date >= ? ORDER BY date", (chat_id, cutoff_time))
     messages = c.fetchall()
     conn.close()
     return messages
+
+def get_ai_summary(discussion):
+    prompt = f"{HUMAN_PROMPT} can you summarize briefly this discussion for me? Answer in the language the messages were sent\n" + discussion + f"{AI_PROMPT}"
+
+    try:
+        response = anthropic.completions.create(
+            model="claude-2",
+            prompt=prompt,
+            max_tokens_to_sample=300,
+        )
+        return response.completion
+    except Exception as e:
+        return f"Error generating AI summary: {str(e)}"
+
+def delete_old_messages(chat_id, cutoff_time):
+    conn = sqlite3.connect('messages.db')
+    c = conn.cursor()
+    c.execute("DELETE FROM messages WHERE chat_id = ? AND date < ?", (chat_id, cutoff_time))
+    deleted_count = c.rowcount
+    conn.commit()
+    conn.close()
+    return deleted_count
+
+@bot.message_handler(commands=['clean'])
+def clean_old_messages(message: Message):
+    chat_id = message.chat.id
+    one_day_ago = int((datetime.datetime.now() - datetime.timedelta(days=1)).timestamp())
+    deleted_count = delete_old_messages(chat_id, one_day_ago)
+    bot.reply_to(message, f"Deleted {deleted_count} messages older than 1 day.")
 
 @bot.message_handler(func=lambda message: True)
 def handle_messages(message: Message):
