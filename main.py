@@ -46,6 +46,12 @@ def help(message: Message):
     /summary <days> <hours> <minutes>\n\
     ")
 
+@bot.message_handler(commands=['ask'])
+def ask(message: Message):
+    request = message.text.split('/ask', 1)[1]
+
+    summary = get_generic_response(request)
+    bot.reply_to(message, summary)
 
 @bot.message_handler(commands=['summary'])
 def summarize(message: Message):
@@ -86,7 +92,7 @@ def summarize(message: Message):
     for msg in recent_messages:
         discussion += f"{msg[0]}: {msg[1]}\n"
 
-    summary = get_ai_summary(discussion)
+    summary = ask_ai(discussion)
 
     bot.reply_to(message, summary)
 
@@ -98,9 +104,17 @@ def get_recent_messages(chat_id, cutoff_time):
     conn.close()
     return messages
 
-def get_ai_summary(discussion):
-    prompt = f"{HUMAN_PROMPT} can you summarize briefly this discussion for me? Answer in the language the messages were sent\n" + discussion + f"{AI_PROMPT}"
+summary_request = "can you summarize briefly this discussion for me? Answer in the language the messages were sent\n"
 
+def get_generic_response(request):
+    prompt = f"{HUMAN_PROMPT}" + request + f"{AI_PROMPT}"
+    return ask_ai(prompt)
+
+def get_ai_summary(discussion):
+    prompt = f"{HUMAN_PROMPT}" + summary_request + discussion + f"{AI_PROMPT}"
+    return ask_ai(prompt)
+
+def ask_ai(prompt):
     try:
         response = anthropic.completions.create(
             model="claude-2",
