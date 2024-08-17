@@ -11,11 +11,14 @@ httpcore==1.0.5
 httpx==0.27.0
 huggingface-hub==0.24.5
 idna==3.7
+iniconfig==2.0.0
 jiter==0.5.0
 packaging==24.1
+pluggy==1.5.0
 pydantic==2.8.2
 pydantic_core==2.20.1
 pyTelegramBotAPI==4.22.1
+pytest==8.3.2
 python-dotenv==1.0.1
 PyYAML==6.0.2
 requests==2.32.3
