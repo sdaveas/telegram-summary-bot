@@ -31,8 +31,8 @@ def one_day_ago() -> int:
 
 
 def help_message(default) -> str:
-    return "Usage: \n\
-        /summary (defaults to {default})\n\
-        /summary 1m\n\
-        /summary 1h30m\n\
-        /summary 1d\n"
+    return f"Usage: \n\
+    /summary (defaults to {default})\n\
+    /summary 1m\n\
+    /summary 1h30m\n\
+    /summary 1d\n"
