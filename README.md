@@ -15,6 +15,7 @@ This Telegram bot is designed to store messages from chats and provide AI-powere
 - Python 3.7+
 - A Telegram Bot Token
 - An Anthropic API Key
+- Docker and Docker Compose (for Docker deployment)
 
 ## Installation
 
@@ -37,11 +38,26 @@ This Telegram bot is designed to store messages from chats and provide AI-powere
 
 ## Usage
 
+### Running Locally
+
 To start the bot, run:
 
 ```
 python bot.py
 ```
+
+### Running with Docker Compose
+
+1. Ensure you have Docker and Docker Compose installed on your system.
+2. Create a `.env` file as described in the Installation section.
+3. Run the following command to start the bot:
+   ```
+   docker-compose up -d
+   ```
+4. To stop the bot:
+   ```
+   docker-compose down
+   ```
 
 ### Available Commands
 
