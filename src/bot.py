@@ -1,8 +1,8 @@
 import os
 import telebot
 from telebot.types import Message
-import brain.brain as brain
-import db.db as db
+import brain as brain
+import db as db
 import utils.utils as utils
 
 TELEGRAM_BOT_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN')
@@ -10,7 +10,8 @@ bot = telebot.TeleBot(TELEGRAM_BOT_TOKEN)
 
 DEFAULT_SUMMARY_DEPTH_EXPRESSION = '1h'
 
-def polling():
+
+def start_polling():
     bot.polling()
 
 
@@ -22,7 +23,8 @@ def credits(message: Message):
 
 @bot.message_handler(commands=['help'])
 def help(message: Message, error_msg=""):
-    bot.send_message(message.chat.id, error_msg + utils.help_message())
+    msg = error_msg + utils.help_message(DEFAULT_SUMMARY_DEPTH_EXPRESSION)
+    bot.send_message(message.chat.id, msg)
 
 
 @bot.message_handler(commands=['ask'])

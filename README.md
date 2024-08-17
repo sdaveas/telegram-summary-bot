@@ -43,7 +43,7 @@ This Telegram bot is designed to store messages from chats and provide AI-powere
 To start the bot, run:
 
 ```
-python bot.py
+python src/app.py
 ```
 
 ### Running with Docker Compose
@@ -62,13 +62,14 @@ python bot.py
 ### Available Commands
 
 - `/help`: Display usage information
-- `/summary [days] [hours] [minutes]`: Generate a summary of recent messages
+- `/summary <M>m<H>h<D>d`: Generate a summary of recent messages
   - Examples:
-    - `/summary 10` (last 10 minutes)
-    - `/summary 2 30` (last 2 hours and 30 minutes)
-    - `/summary 1 6 30` (last 1 day, 6 hours, and 30 minutes)
+    - `/summary 10m` (last 10 minutes)
+    - `/summary 2h30m` (last 2 hours and 30 minutes)
+    - `/summary 1d6h30m` (last 1 day, 6 hours, and 30 minutes)
 - `/ask <question>`: Ask a general question to the AI
 - `/clean`: Delete messages older than 1 day from the database
+- `/credits`: Show repo url
 
 ## Database
 

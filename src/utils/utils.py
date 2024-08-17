@@ -30,9 +30,9 @@ def one_day_ago() -> int:
     return int((datetime.datetime.now() - datetime.timedelta(days=1)).timestamp())
 
 
-def help_message() -> str:
+def help_message(default) -> str:
     return "Usage: \n\
-        /summary (defaults to 10 minutes)\n\
-        /summary <minutes>\n\
-        /summary <hours> <minutes>\n\
-        /summary <days> <hours> <minutes>\n"
+        /summary (defaults to {default})\n\
+        /summary 1m\n\
+        /summary 1h30m\n\
+        /summary 1d\n"
