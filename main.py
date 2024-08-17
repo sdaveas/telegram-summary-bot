@@ -40,11 +40,12 @@ def store_message(message: Message):
 @bot.message_handler(commands=['help'])
 def help(message: Message):
     chat_id = message.chat.id
-    bot.send_message(chat_id, "Usage: /summary \n\
-                     M(minutes) (e.g., /summary 30)\n\
-                     H(hours) M(minutes) (e.g., /summary 12 30)\n\
-                     D(days) H(hours) M(minutes) (e.g., /summary 2 12 30)\n\
-                     ")
+    bot.send_message(chat_id, "Usage: \n\
+    /summary <minutes>\n\
+    /summary <hours> <minutes>\n\
+    /summary <days> <hours> <minutes>\n\
+    ")
+
 
 @bot.message_handler(commands=['summary'])
 def summarize(message: Message):
