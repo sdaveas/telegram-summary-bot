@@ -85,7 +85,11 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## License
 
-[Specify your license here]
+All crates licensed under either of
+* Apache License, Version 2.0
+* MIT license
+
+at your option.
 
 ## Disclaimer
 
