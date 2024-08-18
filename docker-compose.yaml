@@ -10,4 +10,7 @@ services:
       - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
       - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
       - DATABASE_PATH=${DATABASE_PATH}
+      - PORT=${PORT}
+    ports:
+      - "${PORT}:8080"
     restart: always

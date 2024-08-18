@@ -11,7 +11,7 @@ bot = telebot.TeleBot(TELEGRAM_BOT_TOKEN)
 DEFAULT_SUMMARY_DEPTH_EXPRESSION = '1h'
 
 
-def start_polling():
+def start():
     bot.polling()
 
 
