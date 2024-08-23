@@ -7,10 +7,11 @@ services:
       - .:/app
       - ${DATABASE_PATH}:/app/${DATABASE_PATH}
     environment:
-      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
       - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
       - DATABASE_PATH=${DATABASE_PATH}
-      - PORT=${PORT}
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - WEBHOOK_HOST=${WEBHOOK_HOST}
     ports:
-      - "${PORT}:8080"
+      - "${WEBHOOK_PORT}:8443"
+      - "${PROBE_PORT}:8080"
     restart: always

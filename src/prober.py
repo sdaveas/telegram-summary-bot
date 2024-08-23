@@ -4,8 +4,8 @@ from utils import logging
 
 logger = logging.GetLogger()
 
-HOST='0.0.0.0'
-PORT= int(os.environ.get('PORT'))
+PROBE_HOST= os.getenv('PROBE_HOST', '0.0.0.0')
+PROBE_PORT= int(os.environ.get('PROBE_PORT', 8080))
 app = Flask(__name__)
 
 @app.route('/')
@@ -17,5 +17,5 @@ def health_check():
     return "OK", 200
 
 def start():
-    logger.info("starting prober in %s:%s", HOST, PORT)
-    app.run(host=HOST, port=PORT)
+    logger.info("starting prober in %s:%s", PROBE_HOST, PROBE_PORT)
+    app.run(host=PROBE_HOST, port=PROBE_PORT)

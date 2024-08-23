@@ -35,7 +35,9 @@ This Telegram bot is designed to store messages from chats and provide AI-powere
    TELEGRAM_BOT_TOKEN=your_telegram_bot_token_here
    ANTHROPIC_API_KEY=your_anthropic_api_key_here
    DATABASE_PATH=./database/messages.db
-   PORT=8080
+
+   WEBHOOK_HOST=<global host listening to WEBHOOK_PORT> # set by 'ngrok http WEBHOOK_PORT', or whatever cloud service
+   WEBHOOK_PORT=<your port>                             # 8443 by default
    ```
 
 ## Usage

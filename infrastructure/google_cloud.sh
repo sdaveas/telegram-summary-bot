@@ -2,6 +2,7 @@
 
 # Set your Google Cloud project ID
 PROJECT_ID="telegram-summary-bot-432903"
+SERVICE_NAME="telegram-summary-bot"
 
 # Set your image name and tag
 IMAGE_NAME="telegram-summary-bot"
@@ -29,14 +30,16 @@ docker push gcr.io/$PROJECT_ID/$IMAGE_NAME:$IMAGE_TAG
 
 # Deploy to Cloud Run
 gcloud run deploy \
---service-name telegram-summary-bot \
+--platform managed \
 --image gcr.io/$PROJECT_ID/$IMAGE_NAME:$IMAGE_TAG \
---port 8080 \
---set-env-vars TELEGRAM_BOT_TOKEN="$TELEGRAM_BOT_TOKEN",ANTHROPIC_API_KEY="$ANTHROPIC_API_KEY",DATABASE_PATH="$DATABASE_PATH" \
---region europe-central2
+--port 8443 \
+--region europe-central2 \
+--allow-unauthenticated \
+--set-env-vars TELEGRAM_BOT_TOKEN="$TELEGRAM_BOT_TOKEN",ANTHROPIC_API_KEY="$ANTHROPIC_API_KEY",DATABASE_PATH="$DATABASE_PATH",WEBHOOK_HOST="$WEBHOOK_HOST"
+
 
 echo "Creating a new bucket for the deployment"
-gcloud beta run services update telegram-summary-bot \
+gcloud beta run services update $SERVICE_NAME \
     --region europe-central2 \
     --add-volume name=telegram-summary-bot-database,type=cloud-storage,bucket=telegram-summary-bot-database \
     --add-volume-mount volume=telegram-summary-bot-database,mount-path=/app/database
