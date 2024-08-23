@@ -1,11 +1,14 @@
 import os
 import sqlite3
 from telebot.types import Message
+from utils import logging
+
+logger = logging.GetLogger()
 
 DATABASE_PATH = os.getenv('DATABASE_PATH')
 
 def init():
-    print(f"Initializing database at {DATABASE_PATH}")
+    logger.info("Initializing database at %s", DATABASE_PATH)
 
     conn = sqlite3.connect(DATABASE_PATH)
     c = conn.cursor()

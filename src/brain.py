@@ -1,5 +1,8 @@
 import os
 from anthropic import Anthropic, HUMAN_PROMPT, AI_PROMPT
+import utils.logging as logging
+
+logger = logging.GetLogger()
 
 ANTHROPIC_API_KEY = os.getenv('ANTHROPIC_API_KEY')
 anthropic = Anthropic(api_key=ANTHROPIC_API_KEY)
@@ -8,11 +11,14 @@ SUMMARY_REQUEST = "can you summarize briefly this discussion for me? Answer in t
 
 def get_generic_response(request) -> str:
     prompt = f"{HUMAN_PROMPT}" + request + f"{AI_PROMPT}"
+    logger.debug("prompt with discussion: [%s]", prompt)
+
     return use_brain(prompt)
 
 def get_discussion_summary(discussion) -> str:
     prompt = f"{HUMAN_PROMPT}" + SUMMARY_REQUEST + discussion + f"{AI_PROMPT}"
-    print(prompt)
+    logger.debug("prompt with discussion: [%s]", prompt)
+
     return use_brain(prompt)
 
 def use_brain(prompt) -> str:
