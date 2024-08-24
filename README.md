@@ -16,6 +16,7 @@ This Telegram bot is designed to store messages from chats and provide AI-powere
 - A Telegram Bot Token
 - An Anthropic API Key
 - Docker and Docker Compose (for Docker deployment)
+- ngrok
 
 ## Installation
 
@@ -26,11 +27,17 @@ This Telegram bot is designed to store messages from chats and provide AI-powere
    ```
 
 2. Install the required dependencies:
+   using pipenv
+   ```
+   pipenv install
+   ```
+
+   plain python
    ```
    pip install -r requirements.txt
    ```
 
-3. Create an `.env` file in the project root and add your API keys:
+4. Create an `.env` file in the project root and add your API keys:
    ```
    TELEGRAM_BOT_TOKEN=your_telegram_bot_token_here
    ANTHROPIC_API_KEY=your_anthropic_api_key_here
@@ -57,6 +64,7 @@ python src/app.py
 3. Run the following command to start the bot:
    ```
    docker-compose up -d
+   ngrok http 8443
    ```
 4. To stop the bot:
    ```
