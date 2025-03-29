@@ -62,6 +62,30 @@ def clean_old_messages(message: Message):
     deleted_count = db.delete_old_messages(message.chat.id, utils.one_day_ago())
     bot.reply_to(message, f"Deleted {deleted_count} messages older than 1 day.")
 
+def get_discussion(chat_id, summary_depth_expression):
+    if summary_depth_expression is None:
+        summary_depth_seconds = utils.time_expression_to_seconds(DEFAULT_SUMMARY_DEPTH_EXPRESSION)
+    else:
+        summary_depth_seconds = utils.time_expression_to_seconds(summary_depth_expression)
+
+    if summary_depth_seconds == 0:
+        return None
+
+    cutoff_time = utils.seconds_to_timestamp(summary_depth_seconds)
+    recent_messages = db.get_recent_messages(chat_id, cutoff_time)
+
+    if not recent_messages:
+        logger.debug("No messages in the last [%s]", summary_depth_expression)
+        return None
+
+    logger.debug("Recent messages: [%s]", recent_messages)
+
+    discussion = ""
+    for msg in recent_messages:
+        discussion += f"{msg[0]}: {msg[1]}\n"
+
+    return discussion
+
 @bot.message_handler(commands=['summary'])
 def summarize(message: Message):
     logger.info("summary command received")
@@ -70,32 +94,42 @@ def summarize(message: Message):
     summary_depth_expression = message.text.split()
 
     if len(summary_depth_expression) == 1:
-        summary_depth_seconds = utils.time_expression_to_seconds(DEFAULT_SUMMARY_DEPTH_EXPRESSION)
+        summary_depth_expression = None
     elif len(summary_depth_expression) == 2:
-        summary_depth_seconds = utils.time_expression_to_seconds(summary_depth_expression[1])
+        summary_depth_expression = summary_depth_expression[1]
     else:
-        help(message + "invalid /summary argument number\n")
-
-    if summary_depth_seconds == 0:
-        help(message, "invalid /summary argument\n")
+        help(message, "invalid /summary argument number\n")
         return
 
-    cutoff_time = utils.seconds_to_timestamp(summary_depth_seconds)
-    recent_messages = db.get_recent_messages(chat_id, cutoff_time)
-
-    if not recent_messages:
-        logger.debug("No messages in the last [%s]", summary_depth_expression)
-        bot.reply_to(message, f"No messages in the last {summary_depth_expression}")
+    discussion = get_discussion(chat_id, summary_depth_expression)
+    if discussion is None:
+        bot.reply_to(message, f"No messages in the specified time range")
         return
-
-    logger.debug("Recent messages: [%s]", recent_messages)
-
-    discussion = ""
-    for msg in recent_messages:
-        discussion += f"{msg[0]}: {msg[1]}\n"
 
     summary = brain.get_discussion_summary(discussion)
     bot.reply_to(message, summary)
+
+@bot.message_handler(commands=['question'])
+def ask_question(message: Message):
+    logger.info("question command received")
+
+    chat_id = message.chat.id
+    command_parts = message.text.split(maxsplit=2)
+
+    if len(command_parts) < 3:
+        help(message, "Invalid /question format. Use: /question [time_range] Your question\n")
+        return
+
+    summary_depth_expression = command_parts[1]
+    question = command_parts[2]
+
+    discussion = get_discussion(chat_id, summary_depth_expression)
+    if discussion is None:
+        bot.reply_to(message, f"No messages in the specified time range")
+        return
+
+    answer = brain.get_answer_to_question(discussion, question)
+    bot.reply_to(message, answer)
 
 @bot.message_handler(func=lambda message: True)
 def handle_messages(message: Message):
@@ -105,12 +139,7 @@ def handle_messages(message: Message):
 def start():
     logger.info("starting webhook with url: [%s] + [%s]", WEBHOOK_HOST, WEBHOOK_URL_PATH)
 
-    # remove previous webhook if there is one
     bot.remove_webhook()
-
     bot.set_webhook(url=WEBHOOK_HOST + WEBHOOK_URL_PATH)
 
-    app.run(host=WEBHOOK_LISTEN,
-            port=WEBHOOK_PORT,
-            # ssl_context=('path/to/webhook_cert.pem', 'path/to/webhook_pkey.pem'),
-            )
+    app.run(host=WEBHOOK_LISTEN, port=WEBHOOK_PORT)

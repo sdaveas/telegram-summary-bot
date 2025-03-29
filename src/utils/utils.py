@@ -31,8 +31,17 @@ def one_day_ago() -> int:
 
 
 def help_message(default) -> str:
-    return f"Usage: \n\
-    /summary (defaults to {default})\n\
-    /summary 1m\n\
-    /summary 1h30m\n\
-    /summary 1d\n"
+    return f"""Available Commands:
+    /summary - Get a summary of the last {default}.
+    /summary <time> - Get a summary for a specific time range. Examples:
+        - /summary 1m (last 1 minute)
+        - /summary 1h30m (last 1 hour and 30 minutes)
+        - /summary 1d (last 1 day)
+    /question <time> <question> - Ask a question based on the discussion in the specified time range. Examples:
+        - /question 1h What was discussed about the project?
+    /ask <question> - Ask the bot a general question. Example:
+        - /ask What is the capital of France?
+    /clean - Delete messages older than 1 day.
+    /credits - View project credits.
+    /help - Show this help message.
+    """
