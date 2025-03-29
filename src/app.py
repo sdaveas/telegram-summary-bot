@@ -3,7 +3,6 @@ import db as db
 import bot as bot
 import prober as prober
 import threading
-import os
 import utils.logging as logging
 
 logger = logging.GetLogger()
