@@ -38,10 +38,10 @@ gcloud run deploy \
 --set-env-vars TELEGRAM_BOT_TOKEN="$TELEGRAM_BOT_TOKEN",ANTHROPIC_API_KEY="$ANTHROPIC_API_KEY",DATABASE_PATH="$DATABASE_PATH",WEBHOOK_HOST="$WEBHOOK_HOST"
 
 
-echo "Creating a new bucket for the deployment"
-gcloud beta run services update $SERVICE_NAME \
-    --region europe-central2 \
-    --add-volume name=telegram-summary-bot-database,type=cloud-storage,bucket=telegram-summary-bot-database \
-    --add-volume-mount volume=telegram-summary-bot-database,mount-path=/app/database
+# echo "Creating a new bucket for the deployment"
+# gcloud beta run services update $SERVICE_NAME \
+#     --region europe-central2 \
+#     --add-volume name=telegram-summary-bot-database,type=cloud-storage,bucket=telegram-summary-bot-database \
+#     --add-volume-mount volume=telegram-summary-bot-database,mount-path=/app/database
 
 echo "Deployment complete. Check the Google Cloud Console for your app's URL."
