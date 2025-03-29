@@ -139,12 +139,7 @@ def handle_messages(message: Message):
 def start():
     logger.info("starting webhook with url: [%s] + [%s]", WEBHOOK_HOST, WEBHOOK_URL_PATH)
 
-    # remove previous webhook if there is one
     bot.remove_webhook()
-
     bot.set_webhook(url=WEBHOOK_HOST + WEBHOOK_URL_PATH)
 
-    app.run(host=WEBHOOK_LISTEN,
-            port=WEBHOOK_PORT,
-            # ssl_context=('path/to/webhook_cert.pem', 'path/to/webhook_pkey.pem'),
-            )
+    app.run(host=WEBHOOK_LISTEN, port=WEBHOOK_PORT)
