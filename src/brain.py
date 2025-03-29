@@ -8,6 +8,7 @@ ANTHROPIC_API_KEY = os.getenv('ANTHROPIC_API_KEY')
 anthropic = Anthropic(api_key=ANTHROPIC_API_KEY)
 
 SUMMARY_REQUEST = "can you summarize briefly this discussion for me? Answer in the language the messages were sent\n"
+QUESTION_REQUEST = "can you answer this question for me based on the discussion I will prove you? Answer in the language the messages were sent\n Here's the discussion: "
 
 def get_generic_response(request) -> str:
     prompt = f"{HUMAN_PROMPT}" + request + f"{AI_PROMPT}"
@@ -18,6 +19,12 @@ def get_generic_response(request) -> str:
 def get_discussion_summary(discussion) -> str:
     prompt = f"{HUMAN_PROMPT}" + SUMMARY_REQUEST + discussion + f"{AI_PROMPT}"
     logger.debug("prompt with discussion: [%s]", prompt)
+
+    return use_brain(prompt)
+
+def get_answer_to_question(discussion, question) -> str:
+    prompt = f"{HUMAN_PROMPT}" + QUESTION_REQUEST + discussion + "\n\nHere's the question: " + question + f"{AI_PROMPT}"
+    logger.debug("prompt with discussion and question: [%s]", prompt)
 
     return use_brain(prompt)
 
