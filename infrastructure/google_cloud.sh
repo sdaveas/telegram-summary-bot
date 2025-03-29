@@ -87,6 +87,7 @@ manage_secret TELEGRAM_BOT_TOKEN "$TELEGRAM_BOT_TOKEN"
 
 grant_secret_access_if_needed $PROJECT_NUMBER
 
+# TODO: Check if the bucket exists
 gcloud run deploy $SERVICE_NAME \
   --source . \
   --platform managed \
@@ -95,4 +96,6 @@ gcloud run deploy $SERVICE_NAME \
   --allow-unauthenticated \
   --set-secrets=ANTHROPIC_API_KEY=ANTHROPIC_API_KEY:latest \
   --set-secrets=TELEGRAM_BOT_TOKEN=TELEGRAM_BOT_TOKEN:latest \
-  --set-env-vars DATABASE_PATH="$DATABASE_PATH",WEBHOOK_HOST="$WEBHOOK_HOST"
+  --set-env-vars DATABASE_PATH="$DATABASE_PATH",WEBHOOK_HOST="$WEBHOOK_HOST" \
+  --add-volume name=messages,type=cloud-storage,bucket=telegram-summary-bot-database \
+  --add-volume-mount volume=messages,mount-path=/app/database
