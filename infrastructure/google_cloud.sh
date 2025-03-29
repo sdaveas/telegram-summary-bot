@@ -3,7 +3,7 @@
 # Set your Google Cloud project ID
 PROJECT_NUMBER=479511119155
 PROJECT_ID="telegram-summary-bot-432903"
-SERVICE_NAME="telegram-summary-bot-test"
+SERVICE_NAME="telegram-summary-bot"
 REGION="europe-southwest1"
 ENV_DIR=".env"
 
