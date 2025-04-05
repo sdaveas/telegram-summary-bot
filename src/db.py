@@ -46,3 +46,12 @@ def delete_old_messages(chat_id, cutoff_time):
     conn.commit()
     conn.close()
     return deleted_count
+
+
+def get_all_chat_ids():
+    conn = sqlite3.connect(DATABASE_PATH)
+    c = conn.cursor()
+    c.execute("SELECT DISTINCT chat_id FROM messages")
+    chat_ids = [row[0] for row in c.fetchall()]
+    conn.close()
+    return chat_ids

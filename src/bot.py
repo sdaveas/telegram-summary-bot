@@ -18,6 +18,8 @@ WEBHOOK_HOST = CLOUD_RUN_URL or os.getenv('WEBHOOK_HOST')
 
 WEBHOOK_URL_PATH = f"/{TELEGRAM_BOT_TOKEN}/"
 
+ADMIN_USER_ID = os.getenv('ADMIN_USER_ID')
+
 bot = telebot.TeleBot(TELEGRAM_BOT_TOKEN)
 app = flask.Flask(__name__)
 
@@ -152,6 +154,34 @@ def calculate(message: Message):
     except Exception as e:
         logger.error("Error evaluating expression: %s", str(e))
         bot.reply_to(message, "Error: Invalid mathematical expression")
+
+@bot.message_handler(commands=['broadcast'])
+def broadcast(message: Message):
+    logger.info("broadcast command received")
+
+    if message.from_user.id != ADMIN_USER_ID:
+        bot.reply_to(message, "You are not authorized to use this command.")
+        return
+
+    broadcast_text = message.text.split('/broadcast', 1)[1].strip()
+    if not broadcast_text:
+        bot.reply_to(message, "Please provide a message to broadcast.\nExample: /broadcast Hello everyone!")
+        return
+
+    chat_ids = db.get_all_chat_ids()
+    if not chat_ids:
+        bot.reply_to(message, "No chats found.")
+        return
+
+    success_count = 0
+    for chat_id in chat_ids:
+        try:
+            bot.send_message(chat_id, broadcast_text)
+            success_count += 1
+        except Exception as e:
+            logger.error("Failed to send broadcast to chat %s: %s", chat_id, str(e))
+
+    bot.reply_to(message, f"Broadcast completed. Successfully sent to {success_count} out of {len(chat_ids)} chats.")
 
 @bot.message_handler(func=lambda message: True)
 def handle_messages(message: Message):
