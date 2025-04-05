@@ -184,10 +184,37 @@ def broadcast(message: Message):
 
     bot.reply_to(message, f"Broadcast completed. Successfully sent to {success_count} out of {len(chat_ids)} chats.")
 
+@bot.message_handler(content_types=['photo'])
+def handle_messages(message: Message):
+    logger.info("message contains photo and caption is: [%s]", message.caption)
+
+    if message.caption is None:
+        logger.debug("skipping photo with no caption")
+        return
+
+    parts = message.caption.split(' ', 1)
+    if parts[0] == 'split_bill' or parts[0] == 'sb':
+        raw = message.photo[-1].file_id
+        file_info = bot.get_file(raw)
+        photo_bytes = bot.download_file(file_info.file_path)
+
+        description = ""
+        if len(parts) > 1:
+            description = parts[1]
+
+        split_bill_result = brain.split_bill(photo_bytes, description)
+
+        logger.info("received analysis result: [%s]", split_bill_result)
+        bot.reply_to(message, str(split_bill_result))
+
+        return
+
+
 @bot.message_handler(func=lambda message: True)
 def handle_messages(message: Message):
     logger.debug("adding message to db: [%s]", message.text)
     db.store_message(message)
+
 
 def start():
     logger.info("starting webhook with url: [%s] + [%s]", WEBHOOK_HOST, WEBHOOK_URL_PATH)
