@@ -55,7 +55,8 @@ def help(message: Message, error_msg=""):
 def ask(message: Message):
     logger.info("ask command received with prompt: [%s]", message.text)
     request = message.text.split('/ask', 1)[1]
-    summary = brain.get_generic_response(request)
+    context = db.get_context(message.chat.id)
+    summary = brain.get_generic_response(request, context)
     bot.reply_to(message, summary)
 
 @bot.message_handler(commands=['clean'])
@@ -108,7 +109,8 @@ def summarize(message: Message):
         bot.reply_to(message, f"No messages in the specified time range")
         return
 
-    summary = brain.get_discussion_summary(discussion)
+    context = db.get_context(chat_id)
+    summary = brain.get_discussion_summary(discussion, context)
     bot.reply_to(message, summary)
 
 @bot.message_handler(commands=['question'])
@@ -130,7 +132,8 @@ def ask_question(message: Message):
         bot.reply_to(message, f"No messages in the specified time range")
         return
 
-    answer = brain.get_answer_to_question(discussion, question)
+    context = db.get_context(chat_id)
+    answer = brain.get_answer_to_question(discussion, question, context)
     bot.reply_to(message, answer)
 
 @bot.message_handler(commands=['cal'])
@@ -202,7 +205,8 @@ def handle_messages(message: Message):
         if len(parts) > 1:
             description = parts[1]
 
-        split_bill_result = brain.split_bill(photo_bytes, description)
+        context = db.get_context(message.chat.id)
+        split_bill_result = brain.split_bill(photo_bytes, description, context)
 
         logger.info("received analysis result: [%s]", split_bill_result)
         bot.reply_to(message, str(split_bill_result))
@@ -210,6 +214,37 @@ def handle_messages(message: Message):
         return
 
 
+@bot.message_handler(commands=['set_context'])
+def set_context(message: Message):
+    """Set the context for the current chat."""
+    logger.info("setcontext command received")
+
+    context = message.text.split('/set_context', 1)[1].strip()
+    if not context:
+        bot.reply_to(message, "Please provide a context message.\nExample: /setcontext This is a work chat about project X")
+        return
+
+    db.store_context(message.chat.id, context)
+    bot.reply_to(message, "Context updated successfully!")
+
+
+@bot.message_handler(commands=['get_context'])
+def get_context(message: Message):
+    """Get the context for the current chat."""
+    logger.info("get_context command received")
+
+    context = db.get_context(message.chat.id)
+    bot.reply_to(message, "Context: " + context)
+
+@bot.message_handler(commands=['clear_context'])
+def clear_context(message: Message):
+    """Clear the context for the current chat."""
+    logger.info("clear_context command received")
+
+    db.remove_context(message.chat.id)
+    bot.reply_to(message, "Context cleared")
+
+# This needs to be the last handler, otherwise it will catch commands as text messages
 @bot.message_handler(func=lambda message: True)
 def handle_messages(message: Message):
     logger.debug("adding message to db: [%s]", message.text)

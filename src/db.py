@@ -15,6 +15,8 @@ def init():
     c.execute('''CREATE TABLE IF NOT EXISTS messages
                  (id INTEGER PRIMARY KEY, chat_id INTEGER, user_id INTEGER,
                   username TEXT, first_name TEXT, message_text TEXT, date INTEGER)''')
+    c.execute('''CREATE TABLE IF NOT EXISTS context
+                 (chat_id INTEGER PRIMARY KEY, context_text TEXT, last_updated INTEGER)''')
     conn.commit()
     conn.close()
 
@@ -55,3 +57,32 @@ def get_all_chat_ids():
     chat_ids = [row[0] for row in c.fetchall()]
     conn.close()
     return chat_ids
+
+
+def store_context(chat_id: int, context: str) -> None:
+    """Store or update context for a specific chat."""
+    conn = sqlite3.connect(DATABASE_PATH)
+    c = conn.cursor()
+    c.execute("INSERT OR REPLACE INTO context (chat_id, context_text, last_updated) VALUES (?, ?, strftime('%s', 'now'))",
+              (chat_id, context))
+    conn.commit()
+    conn.close()
+
+
+def get_context(chat_id: int) -> str:
+    """Get the context for a specific chat."""
+    conn = sqlite3.connect(DATABASE_PATH)
+    c = conn.cursor()
+    c.execute("SELECT context_text FROM context WHERE chat_id = ?", (chat_id,))
+    result = c.fetchone()
+    conn.close()
+
+    return result[0] if result else ""
+
+
+def remove_context(chat_id: int):
+    conn = sqlite3.connect(DATABASE_PATH)
+    c = conn.cursor()
+    c.execute("DELETE FROM context WHERE chat_id = ?", (chat_id,))
+    conn.commit()
+    conn.close()
