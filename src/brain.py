@@ -30,13 +30,12 @@ def get_answer_to_question(discussion, question) -> str:
 
     return use_brain(prompt)
 
-def use_brain(prompt, photo_bytes=None) -> str:
+def use_brain(prompt) -> str:
     try:
         response = anthropic.completions.create(
             model="claude-2",
             prompt=prompt,
             max_tokens_to_sample=600,
-            photo_bytes=photo_bytes,
         )
         return response.completion
     except Exception as e:
