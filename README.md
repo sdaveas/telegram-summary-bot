@@ -96,12 +96,19 @@ python src/app.py
 - `/set_context <context>`: Set the context for the current chat
   - Example: `/set_context This is a work chat about project X`
 - `/get_context`: View the current context for the chat
+- `/clear_context`: Remove the context for the current chat
 - `split_bill` or `sb` (as photo caption): Split a bill from a receipt photo
   - Example: Send a photo with caption "split_bill Alice: 1 pizza, Bob: 2 beers"
 
 ## Context
 
-The bot can maintain context for each chat, which is used to provide better responses to AI queries. The context is automatically included in all AI-powered responses (summaries, questions, and bill splitting). You can set the context using the `/set_context` command and view it using `/get_context`.
+The bot can maintain context for each chat, which is used to provide better responses to AI queries. The context is automatically included in all AI-powered responses (summaries, questions, and bill splitting). You can:
+
+1. Set the context using `/set_context <context>`
+2. View the current context using `/get_context`
+3. Remove the context using `/clear_context`
+
+The context helps the AI understand the chat's purpose and provide more relevant responses. For example, setting a context like "This is a work chat about project X" will help the AI provide more focused summaries and answers.
 
 ## Database
 
