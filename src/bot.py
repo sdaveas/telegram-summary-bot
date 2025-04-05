@@ -236,6 +236,14 @@ def get_context(message: Message):
     context = db.get_context(message.chat.id)
     bot.reply_to(message, "Context: " + context)
 
+@bot.message_handler(commands=['clear_context'])
+def clear_context(message: Message):
+    """Clear the context for the current chat."""
+    logger.info("clear_context command received")
+
+    db.remove_context(message.chat.id)
+    bot.reply_to(message, "Context cleared")
+
 # This needs to be the last handler, otherwise it will catch commands as text messages
 @bot.message_handler(func=lambda message: True)
 def handle_messages(message: Message):

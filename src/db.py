@@ -78,3 +78,11 @@ def get_context(chat_id: int) -> str:
     conn.close()
 
     return result[0] if result else ""
+
+
+def remove_context(chat_id: int):
+    conn = sqlite3.connect(DATABASE_PATH)
+    c = conn.cursor()
+    c.execute("DELETE FROM context WHERE chat_id = ?", (chat_id,))
+    conn.commit()
+    conn.close()
