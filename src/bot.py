@@ -18,7 +18,7 @@ WEBHOOK_HOST = CLOUD_RUN_URL or os.getenv('WEBHOOK_HOST')
 
 WEBHOOK_URL_PATH = f"/{TELEGRAM_BOT_TOKEN}/"
 
-ADMIN_USER_ID = os.getenv('ADMIN_USER_ID')
+ADMIN_USER_ID = os.getenv('ADMIN_USER_ID', 0)
 
 bot = telebot.TeleBot(TELEGRAM_BOT_TOKEN)
 app = flask.Flask(__name__)
@@ -159,8 +159,9 @@ def calculate(message: Message):
 def broadcast(message: Message):
     logger.info("broadcast command received")
 
-    if message.from_user.id != ADMIN_USER_ID:
-        bot.reply_to(message, "You are not authorized to use this command.")
+    if str(message.from_user.id) != ADMIN_USER_ID:
+        logger.error("User %s is not authorized to use this command. ADMIN_USER_ID is %s", message.from_user.id, ADMIN_USER_ID)
+        bot.reply_to(message, "You are not authorized to use this command. Your user id is: " + str(message.from_user.id))
         return
 
     broadcast_text = message.text.split('/broadcast', 1)[1].strip()
