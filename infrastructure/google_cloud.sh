@@ -84,6 +84,7 @@ enable_service_if_needed "secretmanager.googleapis.com"
 
 manage_secret ANTHROPIC_API_KEY "$ANTHROPIC_API_KEY"
 manage_secret TELEGRAM_BOT_TOKEN "$TELEGRAM_BOT_TOKEN"
+manage_secret ADMIN_USER_ID "$ADMIN_USER_ID"
 
 grant_secret_access_if_needed $PROJECT_NUMBER
 
@@ -96,6 +97,7 @@ gcloud run deploy $SERVICE_NAME \
   --allow-unauthenticated \
   --set-secrets=ANTHROPIC_API_KEY=ANTHROPIC_API_KEY:latest \
   --set-secrets=TELEGRAM_BOT_TOKEN=TELEGRAM_BOT_TOKEN:latest \
+  --set-secrets=ADMIN_USER_ID=ADMIN_USER_ID:latest \
   --set-env-vars DATABASE_PATH="$DATABASE_PATH",WEBHOOK_HOST="$WEBHOOK_HOST" \
   --add-volume name=messages,type=cloud-storage,bucket=telegram-summary-bot-database \
   --add-volume-mount volume=messages,mount-path=/app/database
