@@ -11,6 +11,7 @@ anthropic = Anthropic(api_key=ANTHROPIC_API_KEY)
 SUMMARY_REQUEST = "can you summarize briefly this discussion for me? Answer in the language the messages were sent\n"
 QUESTION_REQUEST = "can you answer this question for me based on the discussion I will prove you?\n Here's the discussion: "
 SPLIT_BILL_REQUEST = "can you split the bill for me based on the description and the photo? Any item that is not listed will be split equally. Add a 'Final totals' section at the very end to show the total amount each person owes. \n Here's the description: "
+CONTEXT_PREFIX = "Here is some context about this chat that might be helpful:\n"
 
 def create_text_messages(prompt: str) -> list[dict]:
     """Create a messages array for text-only queries."""
@@ -52,27 +53,27 @@ def use_brain(messages: list[dict], model: str = "claude-2", max_tokens: int = 6
     except Exception as e:
         return f"Error generating AI response: {str(e)}"
 
-def get_generic_response(request: str) -> str:
-    prompt = f"{HUMAN_PROMPT}" + request + f"{AI_PROMPT}"
+def get_generic_response(request: str, context: str = "") -> str:
+    prompt = f"{HUMAN_PROMPT}" + request + f"{CONTEXT_PREFIX}" + context + f"{AI_PROMPT}"
     logger.debug("prompt with discussion: [%s]", prompt)
     messages = create_text_messages(prompt)
     return use_brain(messages)
 
-def get_discussion_summary(discussion: str) -> str:
-    prompt = f"{HUMAN_PROMPT}" + SUMMARY_REQUEST + discussion + f"{AI_PROMPT}"
+def get_discussion_summary(discussion: str, context: str = "") -> str:
+    prompt = f"{HUMAN_PROMPT}" + SUMMARY_REQUEST + discussion + f"{CONTEXT_PREFIX}" + context + f"{AI_PROMPT}"
     logger.debug("prompt with discussion: [%s]", prompt)
     messages = create_text_messages(prompt)
     return use_brain(messages)
 
-def get_answer_to_question(discussion: str, question: str) -> str:
-    prompt = f"{HUMAN_PROMPT}" + QUESTION_REQUEST + discussion + "\n\nHere's the question: " + question + f"{AI_PROMPT}"
+def get_answer_to_question(discussion: str, question: str, context: str = "") -> str:
+    prompt = f"{HUMAN_PROMPT}" + QUESTION_REQUEST + discussion + "\n\nHere's the question: " + question + f"{CONTEXT_PREFIX}" + context + f"{AI_PROMPT}"
     logger.debug("prompt with discussion and question: [%s]", prompt)
     messages = create_text_messages(prompt)
     return use_brain(messages)
 
-def split_bill(photo_bytes: bytes, description: str) -> str:
+def split_bill(photo_bytes: bytes, description: str, context: str = "") -> str:
     try:
-        text_prompt = f"{SPLIT_BILL_REQUEST}{description}"
+        text_prompt = f"{SPLIT_BILL_REQUEST}{description}" + f"{CONTEXT_PREFIX}" + context
         messages = create_image_messages(photo_bytes, text_prompt)
         return use_brain(messages, model="claude-3-5-sonnet-20240620", max_tokens=1000)
     except Exception as e:
