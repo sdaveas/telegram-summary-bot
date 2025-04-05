@@ -9,6 +9,10 @@ This Telegram bot is designed to store messages from chats and provide AI-powere
 - Flexible summary requests (by minutes, hours, or days)
 - Clean up old messages from the database
 - Ask general questions to the AI
+- Split bills from receipt photos
+- Basic calculator functionality
+- Admin broadcast messages
+- Question answering based on chat history
 
 ## Prerequisites
 
@@ -37,11 +41,12 @@ This Telegram bot is designed to store messages from chats and provide AI-powere
    pip install -r requirements.txt
    ```
 
-4. Create an `.env` file in the project root and add your API keys:
+3. Create an `.env` file in the project root and add your API keys:
    ```
    TELEGRAM_BOT_TOKEN=your_telegram_bot_token_here
    ANTHROPIC_API_KEY=your_anthropic_api_key_here
    DATABASE_PATH=./database/messages.db
+   ADMIN_USER_ID=your_telegram_user_id_here
 
    WEBHOOK_HOST=<global host listening to WEBHOOK_PORT> # set by 'ngrok http WEBHOOK_PORT', or whatever cloud service
    WEBHOOK_PORT=<your port>                             # 8443 by default
@@ -79,18 +84,33 @@ python src/app.py
     - `/summary 10m` (last 10 minutes)
     - `/summary 2h30m` (last 2 hours and 30 minutes)
     - `/summary 1d6h30m` (last 1 day, 6 hours, and 30 minutes)
+- `/question <time_range> <question>`: Ask a question about recent chat history
+  - Example: `/question 1h What was the main topic discussed?`
 - `/ask <question>`: Ask a general question to the AI
+- `/cal <expression>`: Perform basic mathematical calculations
+  - Example: `/cal 2+2`
 - `/clean`: Delete messages older than 1 day from the database
 - `/credits`: Show repo url
+- `/broadcast <message>`: (Admin only) Send a message to all chats
+- `split_bill` or `sb` (as photo caption): Split a bill from a receipt photo
+  - Example: Send a photo with caption "split_bill Alice: 1 pizza, Bob: 2 beers"
 
 ## Database
 
-The bot uses a SQLite database to store messages. The database is automatically created when you first run the bot in the path specified by the enviromnent variable `DATABASE_PATH` (e.g. `./database/messages.db`)
+The bot uses a SQLite database to store messages. The database is automatically created when you first run the bot in the path specified by the environment variable `DATABASE_PATH` (e.g. `./database/messages.db`)
+
+## Testing
+
+The bot includes a test suite that can be run using:
+```
+python src/brain_test.py
+```
 
 ## Security Notes
 
 - Keep your `.env` file secret and never commit it to version control.
 - Ensure you have the necessary rights and comply with privacy regulations when storing and processing chat messages.
+- The `/broadcast` command is restricted to the user specified in `ADMIN_USER_ID`.
 
 ## Contributing
 
