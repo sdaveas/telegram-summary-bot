@@ -131,6 +131,28 @@ def ask_question(message: Message):
     answer = brain.get_answer_to_question(discussion, question)
     bot.reply_to(message, answer)
 
+@bot.message_handler(commands=['cal'])
+def calculate(message: Message):
+    logger.info("cal command received with expression: [%s]", message.text)
+
+    expression = message.text.split('/cal', 1)[1].strip()
+
+    if not expression:
+        bot.reply_to(message, "Please provide a mathematical expression to evaluate.\nExample: /cal 2+2")
+        return
+
+    allowed_chars = set('0123456789+-*/(). ')
+    if not all(c in allowed_chars for c in expression):
+        bot.reply_to(message, "Invalid expression. Only basic math operations (+, -, *, /) and numbers are allowed.")
+        return
+
+    try:
+        result = eval(expression)
+        bot.reply_to(message, f"Result: {result}")
+    except Exception as e:
+        logger.error("Error evaluating expression: %s", str(e))
+        bot.reply_to(message, "Error: Invalid mathematical expression")
+
 @bot.message_handler(func=lambda message: True)
 def handle_messages(message: Message):
     logger.debug("adding message to db: [%s]", message.text)
