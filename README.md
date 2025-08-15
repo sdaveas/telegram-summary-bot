@@ -1,3 +1,5 @@
+Before diving in, check https://github.com/sdaveas/telegram-bot-v2, which is a better-faster-stronger version of this summary bot.
+
 # Telegram Summary Bot
 
 This Telegram bot is designed to store messages from chats and provide AI-powered summaries on demand. It uses the Anthropic API for generating summaries and can handle various time-based summary requests.
